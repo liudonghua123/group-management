@@ -27,8 +27,8 @@ public class UserGroupService {
         return userGroupRepository.findAll(spec, pageable);
     }
 
-    public UserGroup findById(UserGroup.UserGroupCompositeId userGroupCompositeId) {
-        return userGroupRepository.findOne(userGroupCompositeId);
+    public UserGroup findById(Integer id) {
+        return userGroupRepository.findOne(id);
     }
 
     public UserGroup saveOrUpdate(UserGroup userGroup) {

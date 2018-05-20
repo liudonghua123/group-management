@@ -12,42 +12,41 @@ import java.util.List;
 
 @Service
 public class UserService {
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
 
-	public List<User> findAll() {
-		return userRepository.findAll();
-	}
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
 
-	public Page<User> findAll(Pageable pageable) {
-		return userRepository.findAll(pageable);
-	}
+    public Page<User> findAll(Specification<User> spec, Pageable pageable) {
+        return userRepository.findAll(spec, pageable);
+    }
 
-	public Page<User> findAll(Specification<User> spec, Pageable pageable) {
-		return userRepository.findAll(spec, pageable);
-	}
+    public User findById(int id) {
+        return userRepository.findById(id);
+    }
 
-	public User findById(int id) {
-		return userRepository.findById(id);
-	}
+    public User findByUid(String uid) {
+        return userRepository.findByUid(uid);
+    }
 
-	public User findByUid(String uid) {
-		return userRepository.findByUid(uid);
-	}
+    public User saveOrUpdate(User user) {
+        return userRepository.save(user);
+    }
 
-	public User saveOrUpdate(User user) {
-		return userRepository.save(user);
-	}
+    public void delete(User user) {
+        userRepository.delete(user);
+    }
 
-	public void delete(User user) {
-		userRepository.delete(user);
-	}
-
-	public User findByEmail(String email) {
-		return userRepository.findByEmail(email);
-	}
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
 
 }

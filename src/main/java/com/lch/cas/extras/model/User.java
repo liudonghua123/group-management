@@ -1,26 +1,26 @@
 package com.lch.cas.extras.model;
 
-import java.util.Date;
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import org.hibernate.annotations.CreationTimestamp;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
 public class User {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
-	private String uid;
-	private String password;
-	private String username;
-	private int depid;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    private String uid;
+    @JsonIgnore
+    private String password;
+    private String username;
+    private int depid;
     private String depname;
     private String category;
     private String idnum;
-    private int expired;
-    private int disable;
+    private boolean expired;
+    private boolean disable;
     private String email;
     private String phone;
 
@@ -88,19 +88,19 @@ public class User {
         this.idnum = idnum;
     }
 
-    public int getExpired() {
+    public boolean getExpired() {
         return expired;
     }
 
-    public void setExpired(int expired) {
+    public void setExpired(boolean expired) {
         this.expired = expired;
     }
 
-    public int getDisable() {
+    public boolean getDisable() {
         return disable;
     }
 
-    public void setDisable(int disable) {
+    public void setDisable(boolean disable) {
         this.disable = disable;
     }
 
