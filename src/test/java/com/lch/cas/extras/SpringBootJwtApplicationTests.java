@@ -1,4 +1,4 @@
-package me.aboullaite;
+package com.lch.cas.extras;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
