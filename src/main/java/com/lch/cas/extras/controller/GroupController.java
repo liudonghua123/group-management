@@ -43,7 +43,7 @@ public class GroupController {
             @ApiImplicitParam(name = "sort", defaultValue = "id,desc", paramType = "query")})
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<List<Group>> list(HttpServletRequest request, HttpServletResponse response,
-                                            @RequestHeader(value="X-USERID", required = false) int userId, @RequestHeader(value="X-ROLE", required = false) String role,
+                                            @RequestHeader(value="X-USERID", required = false, defaultValue = "0") int userId, @RequestHeader(value="X-ROLE", required = false, defaultValue = "user") String role,
                                             @Spec(path = "name", spec = Like.class) Specification<Group> spec,
                                             @PageableDefault(size = 10, sort = "id") Pageable pageable) {
         if(role.equals("superAdmin")) {
