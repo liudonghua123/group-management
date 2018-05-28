@@ -2,6 +2,7 @@ package com.lch.cas.extras.controller;
 
 import com.lch.cas.extras.config.AppConfig;
 import com.lch.cas.extras.model.User;
+import com.lch.cas.extras.service.UserGroupService;
 import com.lch.cas.extras.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -30,6 +31,8 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserGroupService userGroupService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<TokenEntity> login(@RequestParam String uid, @RequestParam String password) throws ServletException {
@@ -40,7 +43,16 @@ public class AuthController {
         if (!DigestUtils.md5DigestAsHex(password.getBytes()).equalsIgnoreCase(user.getPassword())) {
             throw new ServletException("Invalid login. Please check your uid and password.");
         }
-        String jwtToken = Jwts.builder().setSubject(uid).claim("roles", "user").setIssuedAt(new Date())
+        // 获取用户角色，lch为superAdmin, userGroup中admin为true的用户是admin，其他用户是user
+        // superAdmin 具有所有权限，admin可以修改自己账户以及管理userGroup，user可以修改自己账户
+        String role = "user";
+        if(user.getUid().equals("lch")) {
+            role = "superAdmin";
+        }
+        else if(userGroupService.isAdmin(user.getId())) {
+            role = "admin";
+        }
+        String jwtToken = Jwts.builder().setSubject(uid).claim("roles", role).setIssuedAt(new Date()).claim("userId", user.getId())
                 .signWith(SignatureAlgorithm.HS256, appConfig.getSecretkey()).compact();
         return new ResponseEntity<TokenEntity>(new TokenEntity(jwtToken), HttpStatus.OK);
     }

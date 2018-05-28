@@ -8,6 +8,11 @@ public class Utils {
 
     public static <T> void setExtraHeader(HttpServletResponse response, Page<T> page) {
         response.setHeader("X-Total-Count", String.valueOf(page.getTotalElements()));
-        response.setHeader("Access-Control-Expose-Headers", "X-Total-Count,Content-Range");
+        response.setHeader("Access-Control-Expose-Headers", "X-Total-Count,Content-Range,X-USERID, X-ROLE");
+    }
+
+    public static <T> void setExtraHeader(HttpServletResponse response, int count) {
+        response.setHeader("X-Total-Count", String.valueOf(count));
+        response.setHeader("Access-Control-Expose-Headers", "X-Total-Count,Content-Range,X-USERID, X-ROLE");
     }
 }

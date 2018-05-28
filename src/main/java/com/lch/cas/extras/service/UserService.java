@@ -1,6 +1,7 @@
 package com.lch.cas.extras.service;
 
 import com.lch.cas.extras.model.User;
+import com.lch.cas.extras.model.UserGroup;
 import com.lch.cas.extras.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,11 +10,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserGroupService userGroupService;
 
 
     public List<User> findAll() {
@@ -49,4 +53,9 @@ public class UserService {
     }
 
 
+    public Page<User> findByAdminUserId(int userId, Pageable pageable) {
+        List<Integer> groupIds = userGroupService.findByUserIdAndAdmin(userId, true).stream().map(userGroup -> userGroup.getGroupId()).collect(Collectors.toList());
+        List<Integer> userIds = userGroupService.findByGroupIdIn(groupIds).stream().map(userGroup -> userGroup.getUserId()).collect(Collectors.toList());
+        return userRepository.findByIdIn(userIds, pageable);
+    }
 }

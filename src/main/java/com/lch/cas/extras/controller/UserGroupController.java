@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -42,12 +43,25 @@ public class UserGroupController {
             @ApiImplicitParam(name = "sort", defaultValue = "groupId,desc", paramType = "query")})
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<List<UserGroup>> list(HttpServletRequest request, HttpServletResponse response,
+                                                @RequestHeader(value="X-USERID", required = false) int userId, @RequestHeader(value="X-ROLE", required = false) String role,
                                                 @And ({@Spec(path = "groupId", spec = Equal.class), @Spec(path = "admin", spec = Equal.class)}) Specification<UserGroup> spec,
                                                 @PageableDefault(size = 10, sort = "groupId") Pageable pageable) {
-        Page<UserGroup> page = userGroupService.findAll(spec, pageable);
-        List<UserGroup> userGroups = page.getContent();
-        Utils.setExtraHeader(response, page);
-        return new ResponseEntity<>(userGroups, HttpStatus.OK);
+        if(role.equals("superAdmin")) {
+            Page<UserGroup> page = userGroupService.findAll(spec, pageable);
+            List<UserGroup> userGroups = page.getContent();
+            Utils.setExtraHeader(response, page);
+            return new ResponseEntity<>(userGroups, HttpStatus.OK);
+        }
+        else if(role.equals("admin")) {
+            Page<UserGroup> page = userGroupService.findByUserIdAndAdmin(userId, true, pageable);
+            List<UserGroup> userGroups = page.getContent();
+            Utils.setExtraHeader(response, page);
+            return new ResponseEntity<>(userGroups, HttpStatus.OK);
+        }
+        else {
+            Utils.setExtraHeader(response, 0);
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

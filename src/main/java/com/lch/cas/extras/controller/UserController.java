@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -41,12 +44,28 @@ public class UserController {
             @ApiImplicitParam(name = "sort", defaultValue = "id,desc", paramType = "query")})
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<List<User>> list(HttpServletRequest request, HttpServletResponse response,
+                                           @RequestHeader(value="X-USERID", required = false) int userId, @RequestHeader(value="X-ROLE", required = false) String role,
                                            @Spec(path = "uid", spec = Like.class) Specification<User> spec,
                                            @PageableDefault(size = 10, sort = "id") Pageable pageable) {
-        Page<User> page = userService.findAll(spec, pageable);
-        List<User> users = page.getContent();
-        Utils.setExtraHeader(response, page);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        if(role.equals("superAdmin")) {
+            Page<User> page = userService.findAll(spec, pageable);
+            List<User> users = page.getContent();
+            Utils.setExtraHeader(response, page);
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        }
+        else if(role.equals("admin")) {
+            Page<User> page = userService.findByAdminUserId(userId, pageable);
+            List<User> users = page.getContent();
+            Utils.setExtraHeader(response, page);
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        }
+        else {
+            User user = userService.findById(userId);
+            List<User> users = Arrays.asList(user);
+            Page<User> page = new PageImpl(users);
+            Utils.setExtraHeader(response, 1);
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)

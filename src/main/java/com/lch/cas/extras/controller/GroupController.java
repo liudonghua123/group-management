@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -42,12 +43,25 @@ public class GroupController {
             @ApiImplicitParam(name = "sort", defaultValue = "id,desc", paramType = "query")})
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity<List<Group>> list(HttpServletRequest request, HttpServletResponse response,
+                                            @RequestHeader(value="X-USERID", required = false) int userId, @RequestHeader(value="X-ROLE", required = false) String role,
                                             @Spec(path = "name", spec = Like.class) Specification<Group> spec,
                                             @PageableDefault(size = 10, sort = "id") Pageable pageable) {
-        Page<Group> page = groupService.findAll(spec, pageable);
-        List<Group> groups = page.getContent();
-        Utils.setExtraHeader(response, page);
-        return new ResponseEntity<>(groups, HttpStatus.OK);
+        if(role.equals("superAdmin")) {
+            Page<Group> page = groupService.findAll(spec, pageable);
+            List<Group> groups = page.getContent();
+            Utils.setExtraHeader(response, page);
+            return new ResponseEntity<>(groups, HttpStatus.OK);
+        }
+        else if(role.equals("admin")) {
+            Page<Group> page = groupService.findByAdminUserId(spec, pageable, userId);
+            List<Group> groups = page.getContent();
+            Utils.setExtraHeader(response, page);
+            return new ResponseEntity<>(groups, HttpStatus.OK);
+        }
+        else {
+            Utils.setExtraHeader(response, 0);
+            return new ResponseEntity<>(new ArrayList<Group>(), HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
