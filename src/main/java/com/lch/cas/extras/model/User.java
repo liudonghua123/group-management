@@ -1,6 +1,8 @@
 package com.lch.cas.extras.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import javax.persistence.*;
 
@@ -12,7 +14,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private String uid;
-    @JsonIgnore
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
     private String username;
     private int depid;

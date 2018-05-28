@@ -62,8 +62,8 @@ public class UserController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     public ResponseEntity<User> save(@RequestBody User user) {
         if (StringUtils.isEmpty(user.getUid()) || StringUtils.isEmpty(user.getPassword())) {
-            logger.error("User id is empty.");
-            return new ResponseEntity(new CustomErrorType(String.format("User id is empty.")), HttpStatus.BAD_REQUEST);
+            logger.error("User uid and password is empty.");
+            return new ResponseEntity(new CustomErrorType(String.format("User uid and password is empty.")), HttpStatus.BAD_REQUEST);
         }
         // remove id
         user.setId(null);
