@@ -44,7 +44,7 @@ public class AuthController {
             throw new ServletException("Invalid login. Please check your uid and password.");
         }
         // 获取用户角色，lch为superAdmin, userGroup中admin为true的用户是admin，其他用户是user
-        // superAdmin 具有所有权限，admin可以修改自己账户以及管理userGroup，user可以修改自己账户
+        // superAdmin 具有所有权限，admin可以修改相关userGroup/group/user，user可以修改自己账户
         String role = "user";
         if(user.getUid().equals("lch")) {
             role = "superAdmin";
